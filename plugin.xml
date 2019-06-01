@@ -12,7 +12,7 @@
         <source-file src="src/android/SafeInsets.java" target-dir="src/org/apache/cordova/safeinsets" />
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="SafeInsets">
-                <param name="android-package" value="org.apache.cordova.statusbar.SafeInsets" />
+                <param name="android-package" value="org.apache.cordova.safeinsets.SafeInsets" />
                 <param name="onload" value="true" />
             </feature>
         </config-file>
