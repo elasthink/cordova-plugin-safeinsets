@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="cordova-plugin-safeinsets" version="0.1.0">
+    <name>Cordova SafeInsets Plugin</name>
+    <description>Plugin to integrate screen areas in the style sheets like the status bar or display cutouts.</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova</keywords>
+    <js-module src="src/plugin.js" name="safeinsets">
+        <clobbers target="SafeInsets" />
+    </js-module>
+    <platform name="android">
+        <source-file src="src/android/SafeInsets.java" target-dir="src/org/apache/cordova/safeinsets" />
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="SafeInsets">
+                <param name="android-package" value="org.apache.cordova.statusbar.SafeInsets" />
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+    </platform>
+    <!--
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="SafeInsets">
+                <param name="ios-package" value="CDVSafeInsets" />
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/CDVSafeInsets.h" />
+        <source-file src="src/ios/CDVSafeInsets.m" />
+    </platform>
+    -->
+</plugin>
