@@ -44,8 +44,6 @@ public class SafeInsets extends CordovaPlugin {
 
     private final JSONObject insetsJSON = new JSONObject();
 
-    private float density;
-
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
@@ -54,29 +52,39 @@ public class SafeInsets extends CordovaPlugin {
             final Activity activity = cordova.getActivity();
             final Window window = activity.getWindow();
             final View rootView = window.getDecorView().getRootView();
-
-            density = activity.getResources().getDisplayMetrics().density;
+            final float density = activity.getResources().getDisplayMetrics().density;
 
             rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @Override
                 public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                    if (Build.VERSION.SDK_INT < 28) {
-                        updateInsets(
-                                insets.getSystemWindowInsetTop(),
-                                insets.getSystemWindowInsetRight(),
-                                insets.getSystemWindowInsetBottom(),
-                                insets.getStableInsetLeft()
-                        );
-                    } else {
-                        DisplayCutout cutout = insets.getDisplayCutout();
-                        updateInsets(
-                                cutout.getSafeInsetTop(),
-                                cutout.getSafeInsetRight(),
-                                cutout.getSafeInsetBottom(),
-                                cutout.getSafeInsetLeft()
-                        );
-                    }
                     rootView.onApplyWindowInsets(insets);
+
+                    int top     = insets.getSystemWindowInsetTop(),
+                        right   = insets.getSystemWindowInsetRight(),
+                        bottom  = insets.getSystemWindowInsetBottom(),
+                        left    = insets.getSystemWindowInsetLeft();
+
+                    if (Build.VERSION.SDK_INT >= 28) {
+                        DisplayCutout cutout = insets.getDisplayCutout();
+                        if (cutout != null) {
+                            top     = cutout.getSafeInsetTop();
+                            right   = cutout.getSafeInsetRight();
+                            bottom  = cutout.getSafeInsetBottom();
+                            left    = cutout.getSafeInsetLeft();
+                        }
+                    }
+
+                    try {
+                        insetsJSON.put("top", top / density);
+                        insetsJSON.put("bottom", bottom / density);
+                        insetsJSON.put("left", left / density);
+                        insetsJSON.put("right", right / density);
+                    } catch (JSONException ex) {}
+
+                    if (callbackContext != null) {
+                        sendInsets();
+                    }
+
                     return insets;
                 }
             });
@@ -88,25 +96,11 @@ public class SafeInsets extends CordovaPlugin {
     @Override
     public boolean execute(final String action, final CordovaArgs args, final CallbackContext callbackContext) {
         if ("check".equals(action)) {
-            PluginResult result = new PluginResult(PluginResult.Status.OK, insetsJSON);
-            result.setKeepCallback(true);
             this.callbackContext = callbackContext;
-            callbackContext.sendPluginResult(result);
+            sendInsets();
             return true;
         }
         return false;
-    }
-
-    private void updateInsets(int top, int right, int bottom, int left) {
-        try {
-            insetsJSON.put("top", top / density);
-            insetsJSON.put("bottom", bottom / density);
-            insetsJSON.put("left", left / density);
-            insetsJSON.put("right", right / density);
-        } catch (JSONException ex) {}
-        if (callbackContext != null) {
-            sendInsets();
-        }
     }
 
     private void sendInsets() {
