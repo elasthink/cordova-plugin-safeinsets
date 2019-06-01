@@ -17,7 +17,7 @@
  * under the License.
  *
  */
-package org.apache.cordova.safeinsets;
+package com.elasthink.cordova.safeinsets;
 
 import android.app.Activity;
 import android.os.Build;
