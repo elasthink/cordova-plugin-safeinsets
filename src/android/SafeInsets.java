@@ -57,7 +57,7 @@ public class SafeInsets extends CordovaPlugin {
             rootView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @Override
                 public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                    rootView.onApplyWindowInsets(insets);
+                    view.onApplyWindowInsets(insets);
 
                     int top     = insets.getSystemWindowInsetTop(),
                         right   = insets.getSystemWindowInsetRight(),
